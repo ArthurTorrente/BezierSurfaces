@@ -78,8 +78,8 @@ int main(int argc, char** argv)
 
 	// Création d'une b-spline
 	b = BSpline(30, 4);
-	// b.approximeBounds(true);
-	//b.closeSpline(true);
+	// b.approximeBounds(true);						==> Pour approximer les extrémités
+	// b.closeSpline(true);							==> Pour fermer la bspline
 	b.addControlPoint(Vector3(100, 100, 0));
 	b.addControlPoint(Vector3(150, 400, 0));
 	b.addControlPoint(Vector3(200, 100, 0));
@@ -95,9 +95,9 @@ int main(int argc, char** argv)
 
 	b.approximeSpline();
 
-	// b.extrudeLinear(0, 50);
-	// b.extrudeRevolution();
-	b.extrudeGeneral(b);
+	// b.extrudeLinear(0, 50);						==> Extrusion linéaire avec un facteur de réduction
+	// b.extrudeRevolution();						==> Extrusion de révolution
+	// b.extrudeGeneral(b);							==> Extrusion généralisée selon une autre bspline
 
 	BezierSurface bs(5, 10);
 

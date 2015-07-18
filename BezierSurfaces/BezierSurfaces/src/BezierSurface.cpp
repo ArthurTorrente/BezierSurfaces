@@ -1,4 +1,5 @@
 #include "BezierSurface.h"
+#include "Objects\Geometry.h"
 
 static Vector3 DeCasteljau(float step, std::vector<Vector3> points)
 {
@@ -65,22 +66,61 @@ void BezierSurface::compute()
 {
 	mSurfacePoints.clear();
 
+	std::vector<float> vertices;
+	std::vector<int> indices;
+	std::vector<float> uvs;
+
 	// On parcourt le pas
-	for (uint i = 0; i < mLOD; ++i)
+	for (uint i = 0; i <= mLOD; ++i)
 	{
 		mSurfacePoints.push_back(std::vector<Vector3>());
 		std::vector<Vector3> tmp;
 
 		for (uint j = 0; j < mNumberControlPoints; ++j)
 		{
-			tmp.push_back(DeCasteljau((float)j / mLOD, mControlPoints[j]));
+			tmp.push_back(DeCasteljau((float)i / mLOD, mControlPoints[j]));
 		}
 
-		for (uint j = 0; j < mLOD; ++j)
+		for (uint j = 0; j <= mLOD; ++j)
 		{
-			mSurfacePoints[i].push_back(DeCasteljau((float)j / mLOD, tmp));
+			Vector3 point = DeCasteljau((float)j / mLOD, tmp);
+
+			mSurfacePoints[i].push_back(point);
+
+			vertices.push_back(point.x);
+			vertices.push_back(point.y);
+			vertices.push_back(point.z);
 		}
 	}
 
-}
+	// Création des indices
+	for (uint i = 0; i < mLOD; ++i)
+	{
+		for (uint j = 0; j < mLOD; ++j)
+		{
+			// Triangle 1
+			indices.push_back(i * mLOD + j + 0);			// 0
+			indices.push_back(i * mLOD + j + 1);			// 1
+			indices.push_back((i + 1) * mLOD + j);			// 3
 
+			// Triangle 2
+			indices.push_back((i + 1) * mLOD + j);			// 3
+			indices.push_back(i * mLOD + j + 1);			// 1
+			indices.push_back((i + 1) * mLOD + j + 1);		// 2
+		}
+	}
+
+	// Création des uvs
+	for (uint i = 0; i < mLOD; ++i)
+	{
+		for (uint j = 0; j < mLOD; ++j)
+		{
+			uvs.push_back((float)i / (mLOD - 1));			// u
+			uvs.push_back((float)j / (mLOD - 1));			// v
+		}
+	}
+
+	// Création de la géométrie
+	Geometry g(vertices, indices, uvs);
+
+}
