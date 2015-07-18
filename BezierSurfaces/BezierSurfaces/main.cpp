@@ -74,7 +74,7 @@ void display()
 int main(int argc, char** argv)
 {
 	/* initialize random seed: */
-	srand(time(NULL));
+    srand(static_cast<unsigned int>(time(nullptr)));
 
 	// Création d'une b-spline
 	b = BSpline(30, 4);
