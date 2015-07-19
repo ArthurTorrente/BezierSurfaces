@@ -3,6 +3,8 @@
 
 #include "Common.h"
 
+extern int menuId;
+
 void specialKey(int, int, int);
 void key(unsigned char, int, int);
 void mouse(int, int, int, int);
@@ -15,5 +17,9 @@ void initMenu();
 void refreshUI();
 
 void selectMode(int);
+void selectBSplines(int);
+void editBSplines(int);
+void selectColor(int);
+void selectExtrude(int);
 
 #endif

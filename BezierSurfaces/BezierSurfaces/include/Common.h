@@ -10,12 +10,18 @@
 enum MODE
 {
 	MAIN,
-	BSPLINES,
+	BSPLINES_MAIN,
+	BSPLINES_EDITION,
 	BEZIERSURFACES
 };
 
 extern std::vector<BSpline*> bsplines;
 extern std::vector<BezierSurface*> beziersurfaces;
-extern MODE currentMode = MAIN;
+extern MODE currentMode;
+
+extern uint CURRENT_CURVE_EDITED;
+extern uint CURRENT_VERTEX_EDITED;
+
+extern bool MIDDLE_BUTTON_PRESSED;
 
 #endif

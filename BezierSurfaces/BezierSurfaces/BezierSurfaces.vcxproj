@@ -97,6 +97,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\BezierSurface.cpp" />
     <ClCompile Include="src\BSpline.cpp" />
+    <ClCompile Include="src\Common.cpp" />
     <ClCompile Include="src\Interface.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

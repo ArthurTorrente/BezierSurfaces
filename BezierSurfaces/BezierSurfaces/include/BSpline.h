@@ -31,13 +31,19 @@ public:
 	void orderUp();
 	void orderDown();
 
-	void addControlPoint(const Vector3 v);
+	void addControlPoint(const Vector3& v);
 	void insert(uint index, const Vector3& v);
 	void remove(uint index);
 	Vector3& getVectorAt(uint index);
 	void reset();
 
+	void setColor(const Vector3 color);
+	Vector3& getColor();
+	void showSubCurve(bool visible);
+	bool subCurveVisible();
+
 	void approximeSpline();
+	void draw();
 
 	void loadParametrisation();
 	void nodalVectorUniform();
@@ -55,12 +61,15 @@ private:
 	std::vector<Vector3> mControlPoints;
 	std::vector< std::vector<Vector3> > mApproximedSplines;
 
+	Vector3 mColor;
+
 	uint mOrder;
 	uint mLOD;
 
 	bool mIsClosed;
 	bool mIsApproximedBounds;
 	bool mUseUniformNodal;
+	bool mSubCurveVisible;
 
 	// Mesh mSurface;
 

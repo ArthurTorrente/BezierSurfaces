@@ -1,11 +1,12 @@
 #include "BSpline.h"
 
 BSpline::BSpline()
-	: mOrder(0),
-	mLOD(5),
+	: mOrder(3),
+	mLOD(15),
 	mIsApproximedBounds(false),
 	mIsClosed(false),
-	mUseUniformNodal(true)
+	mUseUniformNodal(true),
+	mColor(Vector3(0.0, 1.0, 0.0))
 {
 }
 
@@ -40,7 +41,7 @@ uint BSpline::getOrder() const
 
 void BSpline::setLOD(uint lod)
 {
-	mLOD = lod;
+	mLOD = (lod > 2) ? lod : 2;
 }
 
 uint BSpline::getLOD() const
@@ -175,7 +176,7 @@ void BSpline::approximeSpline()
 				mControlPoints.pop_back();
 			}
 		}
-		else if (mIsApproximedBounds)
+		else if (mIsClosed)
 		{
 			for (uint i = 0; i < mOrder; ++i)
 			{
@@ -184,6 +185,54 @@ void BSpline::approximeSpline()
 			}
 		}
 	}
+
+}
+
+void BSpline::draw()
+{
+	// Dessin des pts de contrôle
+	Vector3 v;
+	glColor3f(1.0, 0.0, 0.0);
+	glBegin(GL_LINE_STRIP);
+	for (uint i = 0; i < mControlPoints.size(); i++)
+	{
+		v = mControlPoints[i];
+		glVertex2f(v.x, v.y);
+	}
+	glEnd();
+
+	glBegin(GL_QUADS);
+	for (uint i = 0; i < mControlPoints.size(); i++)
+	{
+		v = mControlPoints[i];
+		glVertex2f(v.x - 2, v.y - 2);
+		glVertex2f(v.x + 2, v.y - 2);
+		glVertex2f(v.x + 2, v.y + 2);
+		glVertex2f(v.x - 2, v.y + 2);
+	}
+	glEnd();
+
+	// Dessin des pts approximés
+	glBegin(GL_LINE_STRIP);
+	for (uint i = 0; i < mApproximedSplines.size(); i++)
+	{
+		if (mSubCurveVisible && i % 2 == 0)
+		{
+			glColor3f(1.0 - mColor.x, 1.0 - mColor.y, 1.0 - mColor.z);
+		}
+		else
+		{
+			glColor3f(mColor.x, mColor.y, mColor.z);
+		}
+
+		for (uint j = 0; j < mApproximedSplines[i].size(); ++j)
+		{
+			v = mApproximedSplines[i][j];
+			glVertex2f(v.x, v.y);
+		}	
+	}
+	glEnd();
+
 
 }
 
@@ -219,7 +268,7 @@ Vector3 BSpline::Cox_De_Boor(uint r, float t)
 	return points[mOrder][r];
 }
 
-void BSpline::addControlPoint(const Vector3 v)
+void BSpline::addControlPoint(const Vector3& v)
 {
 	mControlPoints.push_back(v);
 }
@@ -250,6 +299,25 @@ void BSpline::reset()
 	mNodalVector.clear();
 	mControlPoints.clear();
 	mApproximedSplines.clear();
+}
+
+void BSpline::setColor(const Vector3 color)
+{
+	mColor = color;
+}
+
+Vector3& BSpline::getColor()
+{
+	return mColor;
+}
+
+void BSpline::showSubCurve(bool visible)
+{
+	mSubCurveVisible = visible;
+}
+bool BSpline::subCurveVisible()
+{
+	return mSubCurveVisible;
 }
 
 void BSpline::extrudeLinear(float reduction, float height, int inter)
