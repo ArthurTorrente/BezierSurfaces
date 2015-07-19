@@ -15,7 +15,10 @@
 #include "GL/freeglut.h"
 
 #include "Materials/ShaderLoader.h"
+#include "Materials/Texture.h"
+
 #include "Render/Renderer.h"
+
 #include "Cameras/PerspectiveCamera.h"
 
 #include <time.h>
@@ -56,7 +59,7 @@ std::vector<float> randRot;
 void display()
 {	
 	for (uint i = 0; i < objects.size(); ++i)
-		objects[i]->rotateY(0.001);
+		objects[i]->rotateY(0.001f);
 
 	r.render(s, c);
 
@@ -84,20 +87,23 @@ int main(int argc, char** argv)
 
 	r.setClearColor(Vector3(0.0, 1.0, 1.0));
 	r.setViewport(800, 600);
-	r.setAutoUpdate(true);
+	// r.setAutoUpdate(true);
 
 	c.setPosition(Vector3(0, 0, -30));
 
 	ShaderLoader::loadShader("Simple", "simple.vs", "simple.fs");
-	MaterialSPtr mat(new BasicMaterial("Simple", Vector3(1.0, 0.0, 0.0)));
+	
+	Texture t("texture.jpg");
+	
 	Geometry geo = Geometry(
 		std::vector<float>(g_cubeVertices, g_cubeVertices + sizeof(g_cubeVertices) / sizeof(float)), 
 		std::vector<int>(g_cubeIndices, g_cubeIndices + sizeof(g_cubeIndices) / sizeof(int))		
 	);
-	MeshSPtr mesh(new Mesh(geo, mat));
 
 	for (uint i = 0; i < 50; ++i)
 	{
+		MaterialSPtr mat(new BasicMaterial("Simple", Vector3(static_cast <float> (rand()) / static_cast <float> (RAND_MAX), static_cast <float> (rand()) / static_cast <float> (RAND_MAX), static_cast <float> (rand()) / static_cast <float> (RAND_MAX))));
+		MeshSPtr mesh(new Mesh(geo, mat));
 		Object3D* obj = new Object3D();
 		obj->setPosition(Vector3(
 			-10.0f + static_cast <float> (rand() % 20),
@@ -106,7 +112,6 @@ int main(int argc, char** argv)
 		));
 		obj->setMesh(mesh);
 		objects.push_back(obj);
-		// randRot.push_back(static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
 		s.add(obj);
 	}
 
