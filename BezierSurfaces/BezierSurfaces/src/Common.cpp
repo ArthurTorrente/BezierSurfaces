@@ -1,5 +1,9 @@
 #include "Common.h"
 
+Renderer r;
+Scene s;
+PerspectiveCamera c;
+
 std::vector<BSpline*> bsplines;
 extern std::vector<BezierSurface*> beziersurfaces;
 

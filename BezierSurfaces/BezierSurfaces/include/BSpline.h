@@ -15,6 +15,7 @@ public:
 
 	std::vector< std::vector<Vector3> > BSpline::getApproximedSplines() const;
 	std::vector<Vector3> getControlPoints() const;
+	Geometry& getGeometry();
 
 	void setOrder(uint order);
 	uint getOrder() const;
@@ -60,6 +61,7 @@ private:
 	std::vector<float> mNodalVector;
 	std::vector<Vector3> mControlPoints;
 	std::vector< std::vector<Vector3> > mApproximedSplines;
+	Geometry mExtrudeGeo;
 
 	Vector3 mColor;
 

@@ -1,53 +1,64 @@
 #include "include_glut.h"
 #include "Common.h"
-#include "Interface.h"
 
-void reshape(int w, int l)
-{
-	glutReshapeWindow(WINDOW_WIDTH, WINDOW_HEIGHT);
-	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0, WINDOW_WIDTH, WINDOW_HEIGHT, 0.0, -1.0, 1.0);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-}
+GlutWindow* bsplineWindow = NULL;
+GlutWindow* spaceWindow = NULL;
 
-void display()
-{	
-
-	// Clear de la zone de dessin
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	// Dessin des courbes
-	for (unsigned int i = 0; i < bsplines.size(); ++i)
-	{
-		bsplines[i]->draw();
-	}
-
-	// Dessin du carré d'édition
-	if (CURRENT_CURVE_EDITED != -1)
-	{
-		Vector3 vector_tmp;
-		if ((CURRENT_CURVE_EDITED >= 0 && CURRENT_CURVE_EDITED < bsplines.size()) && (CURRENT_VERTEX_EDITED >= 1 && CURRENT_VERTEX_EDITED <= bsplines[CURRENT_CURVE_EDITED]->getControlPoints().size()))
-			vector_tmp = bsplines[CURRENT_CURVE_EDITED]->getControlPoints()[CURRENT_VERTEX_EDITED - 1];
-
-		glColor3f(0.0f, 0.0f, 1.0f);
-		glBegin(GL_POLYGON);
-		glVertex2f(vector_tmp.x - 5, vector_tmp.y - 5);
-		glVertex2f(vector_tmp.x + 5, vector_tmp.y - 5);
-		glVertex2f(vector_tmp.x + 5, vector_tmp.y + 5);
-		glVertex2f(vector_tmp.x - 5, vector_tmp.y + 5);
-		glEnd();
-	}
-
-	glutSwapBuffers();
-}
+void reshapeBSpline(int, int);
+void displayBSpline();
+void mouseBSpline(int, int, int, int);
+void motionBSpline(int, int);
+void keyboardBSpline(unsigned char, int, int);
+void initMenuBSpline();
+void refreshUIBSpline();
+void selectModeBSpline(int mode);
+void selectBSplinesBSpline(int selection);
+void editBSplinesBSpline(int selection);
+void selectColorBSpline(int selection);
+void selectExtrudeBSpline(int selection);
 
 int main(int argc, char** argv)
 {
+	// Initialisation de la fenêtre principale
 	glutInit(&argc, argv);
+
+	bsplineWindow = new GlutWindow(WINDOW_WIDTH, WINDOW_HEIGHT, 10, 10, "B-Splines and Bezier Surfaces", GLUT_SINGLE | GLUT_RGBA | GLUT_ALPHA);
+	bsplineWindow->enable();
+	bsplineWindow->display(displayBSpline);
+	bsplineWindow->reshape(reshapeBSpline);
+	bsplineWindow->mouse(mouseBSpline);
+	bsplineWindow->motion(motionBSpline);
+	bsplineWindow->keyboardFunc(keyboardBSpline);
+
+	GLenum error = glewInit();
+	if (error != GL_NO_ERROR)
+	{
+		// Erreur
+	}
+
+	// Initialisation des différents éléments
+	r.setViewport(WINDOW_WIDTH, WINDOW_HEIGHT);
+	r.setClearColor(Vector3(0.5, 0.5, 0.5));
+
+	c.setPosition(Vector3(0, 0, -30));
+
+	ShaderLoader::loadShader("simple", "simple.vs", "simple.fs");
+
+	// Création du menu
+	initMenuBSpline();
+
+	// Boucle de rendu
+	glutMainLoop();
+
+	// Destruction
+	if (bsplineWindow != NULL) delete bsplineWindow;
+	if (spaceWindow != NULL) delete spaceWindow;
+
+	return 0;
+
+
+
+	/*
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA | GLUT_ALPHA);
 	glutInitWindowPosition(10, 10);
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -71,4 +82,5 @@ int main(int argc, char** argv)
 
 	glutMainLoop();
 	return 0;
+	*/
 }

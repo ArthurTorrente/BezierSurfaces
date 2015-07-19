@@ -6,7 +6,8 @@ BSpline::BSpline()
 	mIsApproximedBounds(false),
 	mIsClosed(false),
 	mUseUniformNodal(true),
-	mColor(Vector3(0.0, 1.0, 0.0))
+	mColor(Vector3(0.0, 1.0, 0.0)),
+	mExtrudeGeo(Geometry(std::vector<float>(), std::vector<int>()))
 {
 }
 
@@ -15,7 +16,8 @@ BSpline::BSpline(uint lod, uint order)
 	mOrder(order),
 	mIsApproximedBounds(false),
 	mIsClosed(false),
-	mUseUniformNodal(true)
+	mUseUniformNodal(true),
+	mExtrudeGeo(Geometry(std::vector<float>(), std::vector<int>()))
 {
 }
 
@@ -32,6 +34,11 @@ std::vector<Vector3> BSpline::getControlPoints() const
 void BSpline::setOrder(uint order)
 {
 	mOrder = order;
+}
+
+Geometry& BSpline::getGeometry()
+{
+	return mExtrudeGeo;
 }
 
 uint BSpline::getOrder() const
@@ -382,7 +389,7 @@ void BSpline::extrudeLinear(float reduction, float height, int inter)
 		}
 	}
 
-	Geometry g(vertices, indices, uvs);
+	mExtrudeGeo = Geometry(vertices, indices, uvs);
 	// BasicMaterial m("Bspline", Vector3(1.0, 0.0, 0.0));
 }
 
@@ -450,7 +457,7 @@ void BSpline::extrudeRevolution(int inter)
 		}
 	}
 
-	Geometry g(vertices, indices, uvs);
+	mExtrudeGeo = Geometry(vertices, indices, uvs);
 }
 
 void BSpline::extrudeGeneral(const BSpline& ref)
@@ -547,7 +554,7 @@ void BSpline::extrudeGeneral(const BSpline& ref)
 		}
 
 		// Création de la géométrie
-		Geometry g(vertices, indices, uvs);
+		mExtrudeGeo = Geometry(vertices, indices, uvs);
 	}
 
 }
