@@ -20,17 +20,6 @@ Renderer r;
 Scene s;
 Camera c;
 
-void reshape(int w, int l)
-{
-	glutReshapeWindow(800, 600);
-	glViewport(0, 0, 800, 600);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0, 800, 600, 0.0, -1.0, 1.0);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-}
-
 void display()
 {
 	r.render(s, c);
@@ -43,8 +32,6 @@ int main(int argc, char** argv)
 
 	c.setPosition(Vector3(0, 0, -10));
 
-
-
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA | GLUT_ALPHA);
 	glutInitWindowPosition(10, 10);
@@ -53,9 +40,7 @@ int main(int argc, char** argv)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glutReshapeFunc(reshape);
 	glutDisplayFunc(display);
-
 
 	glutMainLoop();
 	return 0;
