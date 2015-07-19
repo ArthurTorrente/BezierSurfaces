@@ -47,10 +47,12 @@ static const unsigned int g_cubeIndices[] = {
 Renderer r;
 Scene s;
 PerspectiveCamera c;
-Object3DUPtr obj(new Object3D());
+Object3D* obj = new Object3D();
 
 void display()
-{
+{	
+	obj->rotateX(0.0001);
+
 	r.render(s, c);
 
 	if (r.autoUpdate())
@@ -75,6 +77,7 @@ int main(int argc, char** argv)
 
 	r.setClearColor(Vector3(0.0, 1.0, 1.0));
 	r.setViewport(800, 600);
+	r.setAutoUpdate(true);
 
 	c.setPosition(Vector3(0, 0, -7));
 
