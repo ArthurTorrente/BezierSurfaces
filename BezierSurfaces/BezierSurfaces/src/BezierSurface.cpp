@@ -1,5 +1,5 @@
 #include "BezierSurface.h"
-#include "Objects\Geometry.h"
+#include "Objects/Geometry.h"
 
 static Vector3 DeCasteljau(float step, std::vector<Vector3> points)
 {

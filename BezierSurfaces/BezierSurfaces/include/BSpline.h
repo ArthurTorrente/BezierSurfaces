@@ -2,9 +2,9 @@
 #define _BSPLINE_H_
 
 #include "prerequisites.h"
-#include "Math\Vector3.h"
-#include "Objects\Mesh.h"
-#include "Materials\BasicMaterial.h"
+#include "Math/Vector3.h"
+#include "Objects/Mesh.h"
+#include "Materials/BasicMaterial.h"
 
 class BSpline
 {

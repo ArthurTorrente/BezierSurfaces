@@ -89,11 +89,14 @@
   <ItemGroup>
     <ClInclude Include="include\BezierSurface.h" />
     <ClInclude Include="include\BSpline.h" />
+    <ClInclude Include="include\Common.h" />
+    <ClInclude Include="include\Interface.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\BezierSurface.cpp" />
     <ClCompile Include="src\BSpline.cpp" />
+    <ClCompile Include="src\Interface.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

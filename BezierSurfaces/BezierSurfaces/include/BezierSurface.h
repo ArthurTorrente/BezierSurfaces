@@ -2,7 +2,7 @@
 #define _BEZIER_SURFACE_H_
 
 #include "prerequisites.h"
-#include "Math\Vector3.h"
+#include "Math/Vector3.h"
 
 class BezierSurface
 {
