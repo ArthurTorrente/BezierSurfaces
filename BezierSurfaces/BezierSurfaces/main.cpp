@@ -1,3 +1,4 @@
+#include "include_glut.h"
 #include "Common.h"
 #include "Interface.h"
 
