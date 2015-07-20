@@ -32,6 +32,7 @@ public:
 	void mouse(void(*)(int button, int state, int x, int y));
 	void motion(void(*)(int x, int y));
 	void keyboardFunc(void(*)(unsigned char key, int x, int y));
+	void wheel(void(*)(int button, int dir, int x, int y));
 
 private:
 	bool mActive;

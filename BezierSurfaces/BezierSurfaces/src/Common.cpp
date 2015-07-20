@@ -1,11 +1,15 @@
 #include "Common.h"
 
-Renderer r;
-Scene s;
-PerspectiveCamera c;
+#include "Render/Renderer.h"
+#include "Objects/Scene.h"
+#include "Cameras/PerspectiveCamera.h"
+
+Renderer* r = new Renderer();
+Scene* s = new Scene();
+PerspectiveCamera* c = new PerspectiveCamera();
 
 std::vector<BSpline*> bsplines;
-extern std::vector<BezierSurface*> beziersurfaces;
+BezierSurface* beziersurface;
 
 MODE currentMode = MAIN;
 

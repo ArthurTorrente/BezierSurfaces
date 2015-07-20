@@ -132,3 +132,8 @@ void GlutWindow::keyboardFunc(void(*fp)(unsigned char key, int x, int y))
 {
 	glutKeyboardFunc(fp);
 }
+
+void GlutWindow::wheel(void(*fp)(int button, int dir, int x, int y))
+{
+	glutMouseWheelFunc(fp);
+}

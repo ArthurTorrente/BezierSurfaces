@@ -1,5 +1,4 @@
 #include "BezierSurface.h"
-#include "Objects/Geometry.h"
 
 static Vector3 DeCasteljau(float step, std::vector<Vector3> points)
 {
@@ -29,20 +28,15 @@ static Vector3 DeCasteljau(float step, std::vector<Vector3> points)
 
 }
 
-BezierSurface::BezierSurface()
-	: mNumberControlPoints(3),
-	mLOD(3)
-{
-	compute();
-}
-
 BezierSurface::BezierSurface(uint number, uint lod)
+	: mGeometry(Geometry(std::vector<float>(), std::vector<int>())),
+	mControlGeometry(Geometry(std::vector<float>(), std::vector<int>()))
 {
 	if (number < 3)
 		number = 3;
 	mNumberControlPoints = number;
 
-	float offset = 200.0f;
+	float offset = 400.0f;
 	/*	Explication de ce calcul
 		(number / 2.0f * offset) => permet de diviser par deux et donc de ce centrer en 0
 		petit problème est que je suis centré mais décalé d'un demi offset d'où la deuxième partie
@@ -53,9 +47,45 @@ BezierSurface::BezierSurface(uint number, uint lod)
 		mControlPoints.push_back(std::vector<Vector3>());
 		for (uint j = 0; j < mNumberControlPoints; ++j)
 		{
-			mControlPoints[i].push_back(Vector3(-back + i * offset, 0, -back + j * offset));
+			mControlPoints[i].push_back(Vector3(-back + i * offset, ((i % 2 == 0) ? 0.0f : 500.0f), -back + j * offset));
 		}
 	}
+
+	mControlPoints[0][0].y += 500;
+
+	// mControlPoints.insert(mControlPoints.begin() + mNumberControlPoints / 2, mControlPoints[2]);
+	// mControlPoints.insert(mControlPoints.begin() + mNumberControlPoints / 2, mControlPoints[2]);
+
+
+	// Création du mesh des pts de control
+	std::vector<float> vertices;
+	std::vector<int> indices;
+	for (uint i = 0; i < mNumberControlPoints; ++i)
+	{
+		for (uint j = 0; j < mNumberControlPoints; ++j)
+		{
+			vertices.push_back(mControlPoints[i][j].x);
+			vertices.push_back(mControlPoints[i][j].y);
+			vertices.push_back(mControlPoints[i][j].z);
+		}
+	}
+
+	for (uint i = 0; i < mNumberControlPoints - 1; ++i)
+	{
+		for (uint j = 0; j < mNumberControlPoints - 1; ++j)
+		{
+			indices.push_back(i * mNumberControlPoints + j + 0);			// 0
+			indices.push_back(i * mNumberControlPoints + j + 1);			// 1
+			indices.push_back((i + 1) * mNumberControlPoints + j);			// 3
+
+			// Triangle 2
+			indices.push_back((i + 1) * mNumberControlPoints + j);			// 3
+			indices.push_back(i * mNumberControlPoints + j + 1);			// 1
+			indices.push_back((i + 1) * mNumberControlPoints + j + 1);		// 2
+		}
+	}
+
+	mControlGeometry = Geometry(vertices, indices);
 
 	mLOD = lod;
 
@@ -93,20 +123,23 @@ void BezierSurface::compute()
 		}
 	}
 
+
+
 	// Création des indices
+	int decal = mLOD + 1;
 	for (uint i = 0; i < mLOD; ++i)
 	{
 		for (uint j = 0; j < mLOD; ++j)
 		{
 			// Triangle 1
-			indices.push_back(i * mLOD + j + 0);			// 0
-			indices.push_back(i * mLOD + j + 1);			// 1
-			indices.push_back((i + 1) * mLOD + j);			// 3
+			indices.push_back(i * decal + j + 0);			// 0
+			indices.push_back(i * decal + j + 1);			// 1
+			indices.push_back((i + 1) * decal + j);			// 3
 
 			// Triangle 2
-			indices.push_back((i + 1) * mLOD + j);			// 3
-			indices.push_back(i * mLOD + j + 1);			// 1
-			indices.push_back((i + 1) * mLOD + j + 1);		// 2
+			indices.push_back((i + 1) * decal + j);			// 3
+			indices.push_back(i * decal + j + 1);			// 1
+			indices.push_back((i + 1) * decal + j + 1);		// 2
 		}
 	}
 
@@ -121,6 +154,21 @@ void BezierSurface::compute()
 	}
 
 	// Création de la géométrie
-	Geometry g(vertices, indices, uvs);
+	mGeometry = Geometry(vertices, indices, uvs);
 
+}
+
+Geometry& BezierSurface::getGeometry()
+{
+	return mGeometry;
+}
+
+Geometry& BezierSurface::getControl()
+{
+	return mControlGeometry;
+}
+
+const std::vector<std::vector<Vector3>>& BezierSurface::getControlPoints() const
+{
+	return mControlPoints;
 }

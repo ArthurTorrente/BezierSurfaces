@@ -3,8 +3,7 @@
 
 #include "prerequisites.h"
 #include "Math/Vector3.h"
-#include "Objects/Mesh.h"
-#include "Materials/BasicMaterial.h"
+#include "Objects/Geometry.h"
 
 class BSpline
 {
@@ -52,8 +51,8 @@ public:
 
 	Vector3 Cox_De_Boor(uint r, float t);
 
-	void extrudeLinear(float reduction, float height, int inter = 20);
-	void extrudeRevolution(int inter = 20);
+	void extrudeLinear(float reduction, float height, int inter = 100);
+	void extrudeRevolution(int inter = 50);
 	void extrudeGeneral(const BSpline& ref);
 
 private:

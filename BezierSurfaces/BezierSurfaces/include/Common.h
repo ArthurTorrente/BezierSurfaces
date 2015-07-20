@@ -1,17 +1,16 @@
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
-#include "BSpline.h"
-#include "BezierSurface.h"
 #include "GlutWindow.h"
-
-#include "Render/Renderer.h"
-#include "Objects/Scene.h"
-#include "Cameras/PerspectiveCamera.h"
-#include "Materials/ShaderLoader.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
+
+class BezierSurface;
+class BSpline;
+class Renderer;
+class Scene;
+class PerspectiveCamera;
 
 enum MODE
 {
@@ -38,29 +37,22 @@ extern void editBSplinesBSpline(int);
 extern void selectColorBSpline(int);
 extern void selectExtrudeBSpline(int);
 
-/*
-extern void menuExtru(int);
-extern void subMenuExtru(int);
-extern void keyboardExtru(unsigned char, int, int);
-*/
-
 // ** Fonctions décrites dans Interface3D.cpp **
 extern void reshape3D(int, int);
 extern void display3D();
 extern void mouse3D(int, int, int, int);
 extern void motion3D(int, int);
-/*
-extern void menuExtru(int);
-extern void subMenuExtru(int);
-extern void keyboardExtru(unsigned char, int, int);
-*/
+extern void keyboard3D(unsigned char, int, int);
+extern void wheel3D(int, int, int, int);
+extern void initMenu3D();
+extern void selectMode3D(int);
 
-extern Renderer r;
-extern Scene s;
-extern PerspectiveCamera c;
+extern Renderer* r;
+extern Scene* s;
+extern PerspectiveCamera* c;
 
 extern std::vector<BSpline*> bsplines;
-extern std::vector<BezierSurface*> beziersurfaces;
+extern BezierSurface* beziersurface;
 extern MODE currentMode;
 
 extern uint CURRENT_CURVE_EDITED;

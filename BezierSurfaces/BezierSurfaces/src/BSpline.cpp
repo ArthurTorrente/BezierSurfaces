@@ -1,4 +1,6 @@
 #include "BSpline.h"
+#include "include_glut.h"
+
 
 BSpline::BSpline()
 	: mOrder(3),
@@ -166,7 +168,7 @@ void BSpline::approximeSpline()
 		{
 			mApproximedSplines.push_back(std::vector<Vector3>());
 			// Discrétisation de la sous courbe
-			for (t = mNodalVector[r]; t <= mNodalVector[r + 1]; t += (float) 1.0f / mLOD)
+			for (t = mNodalVector[r]; t <= mNodalVector[r + 1]; t += (float) (1.0f / mLOD))
 			{
 				mApproximedSplines.back().push_back(Cox_De_Boor(r, t));
 			}
@@ -337,7 +339,7 @@ void BSpline::extrudeLinear(float reduction, float height, int inter)
 	// Préparation du pas
 	for (uint i = 0; i < inter; ++i)
 	{
-		T.push_back((float)i / (inter - 1.0f));
+		T.push_back(i);
 	}
 
 	// Création des vertices
@@ -403,7 +405,7 @@ void BSpline::extrudeRevolution(int inter)
 	// Préparation du pas
 	for (uint i = 0; i < inter; ++i)
 	{
-		T.push_back(2.0f * (float)i / (inter - 1.0f));
+		T.push_back(2.0 * M_PI * i / (inter - 1));
 	}
 
 	// Extrusion de la surface
@@ -527,19 +529,20 @@ void BSpline::extrudeGeneral(const BSpline& ref)
 		}
 
 		// Création des indices
-		for (uint i = 0; i < A.size() - 1; ++i)
+		int decal = nbVertices;
+		for (uint i = 0; i < A.size() - 3; ++i)
 		{
 			for (uint j = 0; j < nbVertices - 1; ++j)
 			{
 				// Triangle 1
-				indices.push_back(i * nbVertices + j + 0);			// 0
-				indices.push_back(i * nbVertices + j + 1);			// 1
-				indices.push_back((i + 1) * nbVertices + j);		// 3
+				indices.push_back(i * decal + j + 0);			// 0
+				indices.push_back(i * decal + j + 1);			// 1
+				indices.push_back((i + 1) * decal + j);		// 3
 
 				// Triangle 2
-				indices.push_back((i + 1) * nbVertices + j);		// 3
-				indices.push_back(i * nbVertices + j + 1);			// 1
-				indices.push_back((i + 1) * nbVertices + j + 1);	// 2
+				indices.push_back((i + 1) * decal + j);		// 3
+				indices.push_back(i * decal + j + 1);			// 1
+				indices.push_back((i + 1) * decal + j + 1);	// 2
 			}
 		}
 

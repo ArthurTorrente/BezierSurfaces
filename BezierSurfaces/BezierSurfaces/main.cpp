@@ -17,6 +17,33 @@ void editBSplinesBSpline(int selection);
 void selectColorBSpline(int selection);
 void selectExtrudeBSpline(int selection);
 
+static const float g_cubeVertices[] = {
+	-1.f, -1.f, 1.0f,		// 0
+	1.f, -1.f, 1.0f,  		// 1	
+	1.f, 1.f, 1.0f,			// 2
+	-1.f, 1.f, 1.0f,		// 3	
+	-1.f, -1.f, -1.0f,		// 4
+	1.f, -1.f, -1.0f,		// 5
+	1.f, 1.f, -1.0f,		// 6
+	-1.f, 1.f, -1.0f		// 7
+};
+
+static const unsigned int g_cubeIndices[] = {
+	0, 1, 2, // avant
+	2, 3, 0,
+	3, 2, 6, // haut
+	6, 7, 3,
+	7, 6, 5, // arriere
+	5, 4, 7,
+	1, 5, 6, // droite
+	6, 2, 1,
+	4, 0, 3, // gauche
+	3, 7, 4,
+	4, 5, 1, // bas
+	1, 0, 4
+};
+
+
 int main(int argc, char** argv)
 {
 	// Initialisation de la fenêtre principale
@@ -29,20 +56,6 @@ int main(int argc, char** argv)
 	bsplineWindow->mouse(mouseBSpline);
 	bsplineWindow->motion(motionBSpline);
 	bsplineWindow->keyboardFunc(keyboardBSpline);
-
-	GLenum error = glewInit();
-	if (error != GL_NO_ERROR)
-	{
-		// Erreur
-	}
-
-	// Initialisation des différents éléments
-	r.setViewport(WINDOW_WIDTH, WINDOW_HEIGHT);
-	r.setClearColor(Vector3(0.5, 0.5, 0.5));
-
-	c.setPosition(Vector3(0, 0, -30));
-
-	ShaderLoader::loadShader("simple", "simple.vs", "simple.fs");
 
 	// Création du menu
 	initMenuBSpline();

@@ -1,10 +1,21 @@
 #include "Common.h"
 #include "include_glut.h"
 
+#include "BSpline.h"
+#include "BezierSurface.h"
+
+#include "Render/Renderer.h"
+#include "Objects/Scene.h"
+#include "Cameras/PerspectiveCamera.h"
+#include "Materials/ShaderLoader.h"
+#include "Materials/BasicMaterial.h"
+
 extern void reshape3D(int, int);
 extern void display3D();
 extern void mouse3D(int, int, int, int);
 extern void motion3D(int, int);
+extern void wheel3D(int, int, int, int);
+extern void initMenu3D();
 
 int menuIdBSpline = -1;
 
@@ -92,6 +103,8 @@ void displayBSpline()
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	//r.render(s, c);
+
 	// Dessin des courbes
 	for (unsigned int i = 0; i < bsplines.size(); ++i)
 	{
@@ -115,6 +128,7 @@ void displayBSpline()
 	}
 
 	glutSwapBuffers();
+
 }
 
 void mouseBSpline(int button, int state, int x, int y)
@@ -250,8 +264,9 @@ void refreshUIBSpline()
 			glutAddMenuEntry("Toggle Close spline", 203);
 			glutAddMenuEntry("Order up", 204);
 			glutAddMenuEntry("Order down", 205);
-			glutAddMenuEntry("Remove", 206);
-			glutAddMenuEntry("Back", 207);
+			glutAddMenuEntry("Double point", 206);
+			glutAddMenuEntry("Remove", 207);
+			glutAddMenuEntry("Back", 208);
 
 			break;
 		}
@@ -276,9 +291,51 @@ void selectModeBSpline(int mode)
 		break;
 
 	case 2:
+	{
 		currentMode = BEZIERSURFACES;
-		break;
 
+		if (spaceWindow == NULL || !spaceWindow->isActive())
+		{
+			spaceWindow = new GlutWindow(WINDOW_WIDTH, WINDOW_HEIGHT, 10, 10, "B-Splines and Bezier Surfaces", GLUT_SINGLE | GLUT_RGBA | GLUT_ALPHA);
+			spaceWindow->enable();
+			spaceWindow->display(display3D);
+			spaceWindow->reshape(reshape3D);
+			spaceWindow->mouse(mouse3D);
+			spaceWindow->motion(motion3D);
+			spaceWindow->wheel(wheel3D);
+			// spaceWindow->keyboardFunc(keyboardBSpline);
+
+			glewInit();
+
+
+			// Initialisation des différents éléments
+			r->setViewport(WINDOW_WIDTH, WINDOW_HEIGHT);
+			r->setClearColor(Vector3(0.5, 0.5, 0.5));
+
+			c->setPosition(Vector3(0, 0, -250));
+
+			ShaderLoader::loadShader("simple", "simple.vs", "simple.fs");
+			ShaderLoader::loadShader("bigpoint", "bigpoint.vs", "bigpoint.fs");
+		}
+
+		MaterialSPtr mat(new BasicMaterial("simple", Vector3(1, 1, 0)));
+		beziersurface = new BezierSurface(5, 30);
+		beziersurface->compute();
+
+		MeshSPtr mesh(new Mesh(beziersurface->getGeometry(), mat));
+		Object3D* obj = new Object3D();
+		obj->setMesh(mesh);
+		s->add(obj);
+
+		MaterialSPtr mat_2(new BasicMaterial("bigpoint", Vector3(1, 0, 0)));
+		MeshSPtr mesh_2(new Mesh(beziersurface->getControl(), mat_2));
+		Object3D* obj_2 = new Object3D();
+		obj_2->setRenderMode(GL_POINTS);
+		obj_2->setMesh(mesh_2);
+		s->add(obj_2);
+
+		break;
+	}
 	case 3:
 		exit(0);
 		break;
@@ -345,10 +402,16 @@ void editBSplinesBSpline(int selection)
 		glutPostRedisplay();
 		break;
 	case 6:
+		bsplines[CURRENT_CURVE_EDITED]->insert(CURRENT_VERTEX_EDITED - 1, bsplines[CURRENT_CURVE_EDITED]->getVectorAt(CURRENT_VERTEX_EDITED - 1));
+		bsplines[CURRENT_CURVE_EDITED]->approximeSpline();
+		CURRENT_VERTEX_EDITED++;
+		glutPostRedisplay();
+		break;
+	case 7:
 		bsplines.erase(bsplines.begin() + CURRENT_CURVE_EDITED);
 		CURRENT_CURVE_EDITED = -1;
 		glutPostRedisplay();
-	case 7:
+	case 8:
 		currentMode = BSPLINES_MAIN;
 		CURRENT_CURVE_EDITED = -1;
 		CURRENT_VERTEX_EDITED = 0;
@@ -395,31 +458,6 @@ void selectExtrudeBSpline(int selection)
 {
 	int id = selection % 100;
 
-	switch (id)
-	{
-	case 0:
-		/*bsplines[CURRENT_CURVE_EDITED]->extrudeLinear(0, 0);
-		MaterialSPtr mat(new BasicMaterial("simple", Vector3(1, 1, 0)));
-		MeshSPtr mesh(new Mesh(bsplines[CURRENT_CURVE_EDITED]->getGeometry(), mat));
-		Object3D* obj = new Object3D();
-		obj->setMesh(mesh);
-		s.add(obj);*/
-
-		// Ajout d'un cube pour voir ce qu'il se passe
-		Geometry geo = Geometry(
-			std::vector<float>(g_cubeVertices, g_cubeVertices + sizeof(g_cubeVertices) / sizeof(float)),
-			std::vector<int>(g_cubeIndices, g_cubeIndices + sizeof(g_cubeIndices) / sizeof(int))
-		);
-
-		MaterialSPtr mat_2(new BasicMaterial("simple", Vector3(1, 1, 0)));
-		MeshSPtr cube(new Mesh(geo, mat_2));
-		Object3D* obj_2 = new Object3D();
-		obj_2->setMesh(cube);
-		s.add(obj_2);
-
-		break;
-	}
-
 	if (spaceWindow == NULL || !spaceWindow->isActive())
 	{
 		spaceWindow = new GlutWindow(WINDOW_WIDTH, WINDOW_HEIGHT, 10, 10, "B-Splines and Bezier Surfaces", GLUT_SINGLE | GLUT_RGBA | GLUT_ALPHA);
@@ -428,9 +466,56 @@ void selectExtrudeBSpline(int selection)
 		spaceWindow->reshape(reshape3D);
 		spaceWindow->mouse(mouse3D);
 		spaceWindow->motion(motion3D);
+		spaceWindow->wheel(wheel3D);
 		// spaceWindow->keyboardFunc(keyboardBSpline);
 
+		initMenu3D();
+
+		glewInit();
+
+		// Initialisation des différents éléments
+		r->setViewport(WINDOW_WIDTH, WINDOW_HEIGHT);
+		r->setClearColor(Vector3(0.5, 0.5, 0.5));
+		// r.setAutoUpdate(true);
+
+		c->setPosition(Vector3(0, 0, -250));
+
+		ShaderLoader::loadShader("simple", "simple.vs", "simple.fs");
+		ShaderLoader::loadShader("bigpoint", "bigpoint.vs", "bigpoint.fs");
 	}
 
+	switch (id)
+	{
+		case 0:
+		{
+			bsplines[CURRENT_CURVE_EDITED]->extrudeLinear(1, 20);
+			MaterialSPtr mat(new BasicMaterial("simple", Vector3(1, 1, 0)));
+			MeshSPtr mesh(new Mesh(bsplines[CURRENT_CURVE_EDITED]->getGeometry(), mat));
+			Object3D* obj = new Object3D();
+			obj->setMesh(mesh);
+			s->add(obj);
+			break;
+		}
+	case 1:
+		{
+			bsplines[CURRENT_CURVE_EDITED]->extrudeRevolution();
+			MaterialSPtr mat(new BasicMaterial("simple", Vector3(1, 0, 0)));
+			MeshSPtr mesh(new Mesh(bsplines[CURRENT_CURVE_EDITED]->getGeometry(), mat));
+			Object3D* obj = new Object3D();
+			obj->setMesh(mesh);
+			s->add(obj);
+			break;
+		}
+	case 2:
+		{
+			bsplines[CURRENT_CURVE_EDITED]->extrudeGeneral(*bsplines[CURRENT_CURVE_EDITED]);
+			MaterialSPtr mat(new BasicMaterial("simple", Vector3(1, 1, 0)));
+			MeshSPtr mesh(new Mesh(bsplines[CURRENT_CURVE_EDITED]->getGeometry(), mat));
+			Object3D* obj = new Object3D();
+			obj->setMesh(mesh);
+			s->add(obj);
+			break;
+		}
+	}
 
 }
