@@ -9,7 +9,7 @@ BSpline::BSpline()
 	mIsClosed(false),
 	mUseUniformNodal(true),
 	mColor(Vector3(0.0, 1.0, 0.0)),
-	mExtrudeGeo(Geometry(std::vector<float>(), std::vector<int>()))
+	mExtrudeGeo(std::vector<float>(), std::vector<uint>())
 {
 }
 
@@ -19,7 +19,7 @@ BSpline::BSpline(uint lod, uint order)
 	mIsApproximedBounds(false),
 	mIsClosed(false),
 	mUseUniformNodal(true),
-	mExtrudeGeo(Geometry(std::vector<float>(), std::vector<int>()))
+	mExtrudeGeo(std::vector<float>(), std::vector<uint>())
 {
 }
 
@@ -333,7 +333,7 @@ void BSpline::extrudeLinear(float reduction, float height, int inter)
 {
 	std::vector<float> T;
 	std::vector<float> vertices;
-	std::vector<int> indices;
+	std::vector<uint> indices;
 	std::vector<float> uvs;
 
 	// Préparation du pas
@@ -399,7 +399,7 @@ void BSpline::extrudeRevolution(int inter)
 {
 	std::vector<float> T;
 	std::vector<float> vertices;
-	std::vector<int> indices;
+	std::vector<uint> indices;
 	std::vector<float> uvs;
 
 	// Préparation du pas
@@ -470,7 +470,7 @@ void BSpline::extrudeGeneral(const BSpline& ref)
 	if (mApproximedSplines.size() * ame.size() != 0)
 	{
 		std::vector<float> vertices;
-		std::vector<int> indices;
+		std::vector<uint> indices;
 		std::vector<float> uvs;
 
 		// On regroupe toutes les sous courbes en une seule => plus facile à gérer

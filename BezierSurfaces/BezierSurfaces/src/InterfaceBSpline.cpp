@@ -282,6 +282,8 @@ void refreshUIBSpline()
 
 }
 
+#include <array>
+
 void selectModeBSpline(int mode)
 {
 	switch (mode)

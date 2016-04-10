@@ -29,8 +29,8 @@ static Vector3 DeCasteljau(float step, std::vector<Vector3> points)
 }
 
 BezierSurface::BezierSurface(uint number, uint lod)
-	: mGeometry(Geometry(std::vector<float>(), std::vector<int>())),
-	mControlGeometry(Geometry(std::vector<float>(), std::vector<int>()))
+	: mGeometry(std::vector<float>(), std::vector<uint>()),
+	mControlGeometry(std::vector<float>(), std::vector<uint>())
 {
 	if (number < 3)
 		number = 3;
@@ -59,7 +59,7 @@ BezierSurface::BezierSurface(uint number, uint lod)
 
 	// Création du mesh des pts de control
 	std::vector<float> vertices;
-	std::vector<int> indices;
+	std::vector<uint> indices;
 	for (uint i = 0; i < mNumberControlPoints; ++i)
 	{
 		for (uint j = 0; j < mNumberControlPoints; ++j)
@@ -97,7 +97,7 @@ void BezierSurface::compute()
 	mSurfacePoints.clear();
 
 	std::vector<float> vertices;
-	std::vector<int> indices;
+	std::vector<uint> indices;
 	std::vector<float> uvs;
 
 	// On parcourt le pas
@@ -126,7 +126,7 @@ void BezierSurface::compute()
 
 
 	// Création des indices
-	int decal = mLOD + 1;
+	uint decal = mLOD + 1;
 	for (uint i = 0; i < mLOD; ++i)
 	{
 		for (uint j = 0; j < mLOD; ++j)
